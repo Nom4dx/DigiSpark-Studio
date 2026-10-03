@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script>
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("digispark-theme") || "dark";
+      } catch (e) {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <title>Digispark Studio · from blocks to board</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><rect width=%2240%22 height=%2240%22 rx=%2210%22 fill=%22%23275448%22/><text x=%228%22 y=%2229%22 fill=%22white%22 font-size=%2228%22>ϟ</text></svg>"
+    />
+  </head>
+  <body data-view="all">
+    <a class="skip-link" href="#workbench">Skip to workbench</a>
+    <header>
+      <a class="brand" href="/" aria-label="Digispark Studio"
+        ><span class="brandmark">ϟ</span
+        ><span
+          >digispark<span class="brandlight"> studio</span
+          ><small>USB WORKBENCH</small></span
+        ></a
+      >
+      <div class="header-actions">
+        <span class="local-badge"><i></i> Local workbench</span
+        ><button id="themeToggle" aria-label="Toggle theme" aria-pressed="true">
+          ☀ Light theme</button
+        ><button id="help">Quick guide <span>↗</span></button
+        ><button id="save">↓ Save project</button
+        ><button class="primary" id="export">
+          Export .ino <span>↗</span>
+        </button>
+      </div>
+    </header>
+    <main>
+      <section class="project-bar">
+        <div class="project-field">
+          <label for="projectName"
+            >LOCAL PROJECT <span class="project-extension">.ino</span></label
+          ><input
+            id="projectName"
+            value="My Rickroll"
+            maxlength="60"
+            aria-label="Project name"
+          /><span id="saveState" role="status"
+            >Automatically saved in your browser</span
+          >
+        </div>
+        <div class="board-label">
+          <span class="board-chip">▣</span>
+          <div>
+            <strong>Digispark ATtiny85</strong><small>USB · 16.5 MHz</small>
+          </div>
+        </div>
+      </section>
+      <section class="config-card" aria-label="Project settings">
+        <div class="settings">
+          <label
+            >Target system<select id="os">
+              <option value="windows">Windows</option>
+              <option value="linux">Linux</option>
+              <option value="mac">macOS</option>
+            </select></label
+          ><label
+            >Keyboard layout<select
+              id="layout"
+              aria-describedby="layoutHint"
+            ></select></label
+          ><label
+            >Keyboard mode<select id="layoutMode">
+              <option value="single">Selected layout only</option>
+              <option value="sweep">Try all 15 layouts</option>
+            </select></label
+          ><label id="layoutPauseLabel" hidden
+            >Pause between attempts · ms<input
+              id="layoutPause"
+              type="number"
+              min="0"
+              max="60000"
+              step="100"
+              value="1500"
+          /></label>
+          <details id="advancedSettings" class="advanced">
+            <summary>Board settings</summary>
+            <div class="advanced-content">
+              <label
+                >Built-in LED<select id="ledPin">
+                  <option value="1">P1 · standard</option>
+                  <option value="0">P0 · variant</option>
+                </select></label
+              ><label
+                >USB startup delay · ms<input
+                  id="startup"
+                  type="number"
+                  min="0"
+                  max="60000"
+                  step="100"
+                  value="2500"
+              /></label>
+              <p>P3 and P4 are reserved for USB.</p>
+            </div>
+          </details>
+        </div>
+        <p id="layoutHint" class="config-hint">
+          The layout must match the keyboard layout on the target computer.
+        </p>
+      </section>
+      <div class="workbench-bar" id="workbench">
+        <nav class="view-tabs" role="tablist" aria-label="Workbench view">
+          <button
+            id="view-all"
+            data-view="all"
+            role="tab"
+            aria-selected="true"
+            aria-controls="studioGrid"
+          >
+            Overview</button
+          ><button
+            id="view-blocks"
+            data-view="blocks"
+            role="tab"
+            aria-selected="false"
+            aria-controls="blocksPanel"
+            tabindex="-1"
+          >
+            Blocks</button
+          ><button
+            id="view-simulation"
+            data-view="simulation"
+            role="tab"
+            aria-selected="false"
+            aria-controls="simPanel"
+            tabindex="-1"
+          >
+            Simulation</button
+          ><button
+            id="view-code"
+            data-view="code"
+            role="tab"
+            aria-selected="false"
+            aria-controls="codePanel"
+            tabindex="-1"
+          >
+            Code
+          </button>
+        </nav>
+        <span id="projectStatus" role="status" class="project-status"
+          >Getting ready…</span
+        >
+      </div>
+      <div id="manualNotice" class="manual-notice" hidden>
+        <strong>Code edited manually.</strong> Export and compilation use the
+        editor; simulation still uses the blocks.
+      </div>
+      <div class="studio-grid" id="studioGrid">
+        <section
+          id="blocksPanel"
+          class="panel workspace-panel"
+          aria-label="Blocks"
+        >
+          <div class="panelbar">
+            <div>
+              <span class="section-number">01</span
+              ><strong>Your sequence</strong
+              ><span id="blockCount" class="pill">0 blocks</span>
+            </div>
+            <div class="compact-actions">
+              <button id="undo" title="Undo" aria-label="Undo block change">
+                ↶</button
+              ><button id="redo" title="Redo" aria-label="Redo block change">
+                ↷</button
+              ><button
+                id="fit"
+                title="Fit blocks"
+                aria-label="Fit blocks to workspace"
+              >
+                ⊞</button
+              ><button id="newProject">New</button>
+            </div>
+          </div>
+          <div class="examplebar">
+            <button id="toggleModules" aria-expanded="false">＋ Modules</button
+            ><span>Start with an idea</span
+            ><select id="examples" aria-label="Examples">
+              <option value="">Choose an example…</option>
+              <option value="rickroll">↗ Rickroll + LED</option>
+              <option value="hello">⌨ Hello, world</option>
+              <option value="blink">☀ Blinking LED</option>
+              <option value="gpio">◉ Button on P2</option>
+              <option value="os">⌘ OS shortcuts</option>
+              <option value="all">◎ All modules</option></select
+            ><button id="import">↑ Import</button
+            ><input
+              type="file"
+              id="fileInput"
+              accept=".json,application/json"
+              hidden
+            />
+          </div>
+          <div id="blockly" aria-label="Visual block editor"></div>
+          <div class="workspace-footer">
+            <span
+              ><i class="dot green"></i> Drag blocks and connect them to “On
+              start”</span
+            ><span id="duration">—</span>
+          </div>
+        </section>
+        <div class="right-column">
+          <section
+            id="simPanel"
+            class="panel simulator-panel"
+            aria-label="Simulation"
+          >
+            <div class="panelbar">
+              <div>
+                <span class="section-number">02</span
+                ><strong>Test bench</strong>
+              </div>
+              <span class="pill simulated">Preview only</span>
+            </div>
+            <canvas
+              id="scene"
+              width="780"
+              height="370"
+              aria-label="Simulation of Digispark, LED, GPIO, and computer"
+            ></canvas>
+            <div class="sim-controls">
+              <button id="play" class="primary">▶ Run</button
+              ><button id="step" title="Run one event">Step →</button
+              ><button id="reset" title="Restart" aria-label="Reset simulation">
+                ↺</button
+              ><select id="speed" aria-label="Simulation speed">
+                <option value="1">1×</option>
+                <option value="4" selected>4×</option>
+                <option value="10">10×</option></select
+              ><span id="clock">00:00.0</span>
+            </div>
+            <div class="progress"><div id="progressFill"></div></div>
+            <div class="sim-detail">
+              <span id="simLabel" role="status"
+                >Ready. No commands will be sent to your computer.</span
+              >
+              <details>
+                <summary>Simulated inputs</summary>
+                <div class="input-pins">
+                  <label><input type="checkbox" data-pin="0" /> P0 high</label
+                  ><label><input type="checkbox" data-pin="1" /> P1 high</label
+                  ><label><input type="checkbox" data-pin="2" /> P2 high</label>
+                </div>
+              </details>
+            </div>
+          </section>
+          <section
+            id="codePanel"
+            class="panel code-panel"
+            aria-label="Arduino code"
+          >
+            <div class="panelbar">
+              <div>
+                <span class="section-number">03</span
+                ><strong>Arduino code</strong
+                ><span class="pill" id="codeMode">From blocks</span>
+              </div>
+              <div class="code-actions">
+                <button id="copyCode" title="Copy all code">Copy</button
+                ><button
+                  id="regenerate"
+                  title="Replace manual edits with code generated from blocks"
+                >
+                  ↻ Regenerate
+                </button>
+              </div>
+            </div>
+            <div id="editor"></div>
+            <div class="code-footer">
+              <span id="compilerStatus">Looking for compiler…</span
+              ><button id="compile">✓ Check code</button>
+            </div>
+          </section>
+        </div>
+      </div>
+      <section class="bottom-grid">
+        <details id="diagnostics" class="panel diagnostics">
+          <summary>
+            Notes and checks <span id="warningCount" class="pill">0</span>
+          </summary>
+          <ul id="warnings"></ul>
+          <pre id="compileOutput" hidden></pre>
+        </details>
+        <details id="eventPanel" class="panel event-panel">
+          <summary>
+            Simulation log
+            <span id="eventCount" class="pill">0</span>
+          </summary>
+          <ol id="eventLog"></ol>
+        </details>
+      </section>
+      <footer>
+        <span>Save your project to keep its blocks and settings.</span
+        ><span
+          >Blockly · CodeMirror · Flask
+          <button id="sources">Sources and components ↗</button></span
+        >
+      </footer>
+    </main>
+    <div id="toast" role="status" hidden></div>
+    <dialog id="guide">
+      <div class="dialog-head">
+        <h2>Welcome to the workbench</h2>
+        <button id="closeGuide" aria-label="Close guide">✕</button>
+      </div>
+      <div id="guideContent"></div>
+    </dialog>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>
