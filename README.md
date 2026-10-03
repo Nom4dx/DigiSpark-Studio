@@ -318,4 +318,4 @@ git push -u origin main
 
 These are instructions for the owner; the launcher does not execute them. For a clean transfer archive, run `python tools/package_release.py`. The ZIP excludes installed dependencies and local data.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development checks and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for licenses. Original code uses the [ISC license](LICENSE); third-party components and derived tables retain their own licenses.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development checks and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for licenses. Original code uses the [MIT license](LICENSE); third-party components and derived tables retain their own licenses.
